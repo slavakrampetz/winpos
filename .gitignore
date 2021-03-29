@@ -11,5 +11,18 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+## IDEA
+/.idea/**/*.*
+/.idea/dataSources/
+/.idea/$CACHE_FILE$
+!/.idea/inspectionProfiles/Project_Default.xml
+!/.idea/dictionaries/*.xml
+!/.idea/go.xml
+
+
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+go.sum
+
+## log monitoring software
+/.snaketail.xml
