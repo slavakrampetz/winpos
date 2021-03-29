@@ -26,3 +26,4 @@ go.sum
 
 ## log monitoring software
 /.snaketail.xml
+*.log
