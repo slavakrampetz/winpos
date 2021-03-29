@@ -1,0 +1,84 @@
+# https://taskfile.dev
+
+version: '2'
+
+## Common settings
+silent: true
+expansions: 2
+
+vars:
+  EXENAME: winpos{{exeExt}}
+  EXE: ./bin/{{.EXENAME}}
+
+#  GO_PACKAGES:
+#    sh: go list ./...
+
+#  GIT_COMMIT:
+#    sh: git log -n 1 --format=%h
+
+
+tasks:
+
+  build:
+    desc: Build winpos.exe
+    cmds:
+      - task: build-do
+    sources:
+      - Taskfile.yml
+      - src/**/*.go
+      - go.mod
+    generates:
+      - ./{{.EXE}}
+
+  build-do:
+    desc: Build winpos.exe
+    cmds:
+      - cmd: echo "Building {{.EXE}} …"
+        silent: false
+      - cmd: go build -i -ldflags -H=windowsgui -o ./{{.EXE}} ./dev/app.go
+
+  run-list:
+    deps: [build]
+    cmds:
+      - echo "Launching {{.EXE}} ..."
+      - cmd: ./{{.EXE}} list
+        ignore_error: true
+
+  # test-all:
+  #   desc: Tests all go modules
+  #   cmds:
+  #     - echo "----------------------------------------------"
+  #     - echo "Starting tests:..."
+  #     - echo "----------------------------------------------"
+  #     - go test ./src/...
+
+  vendor:
+    desc: Sync vendor/ directory according to go.mod file
+    cmds:
+      - go mod vendor
+
+  # lint:
+  #   desc: Runs golint
+  #   cmds:
+  #     - golint {{catLines .GO_PACKAGES}}
+  #   silent: true
+
+  # ## Dependencies
+  # dl-deps:
+  #   desc: Downloads cli dependencies
+  #   cmds:
+  #     - task: go-get
+  #       vars: {REPO: golang.org/x/lint/golint}
+  #     #- task: go-get
+  #     #  vars: {REPO: github.com/goreleaser/goreleaser}
+  #     #- task: go-get
+  #     #  vars: {REPO: github.com/goreleaser/godownloader}
+
+  # go-get:
+  #   cmds:
+  #     - go get -u {{.REPO}}
+
+  # packages:
+  #   cmds:
+  #     - echo '{{.GO_PACKAGES}}'
+  #   silent: true
