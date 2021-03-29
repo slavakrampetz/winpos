@@ -37,5 +37,5 @@ so please change it if you want so. PR is welcome.
 
 ### TODO
 
-[ ] Implement `watch` mode: program running in background, 
-    periodically (on 5 seconds of user idle, for example), save all positions
+- [ ] Implement `watch` mode: program running in background, 
+  periodically (on 5 seconds of user idle, for example), save all positions
