@@ -48,6 +48,7 @@ type Wnd struct {
 	MinPosition    api.POINT
 	MaxPosition    api.POINT
 	NormalPosition api.RECT
+	ClassName      string
 }
 
 func EnumAllWindows() ([]Wnd, error) {
@@ -67,14 +68,20 @@ func EnumAllWindows() ([]Wnd, error) {
 			// return lastError("GetWindowPlacement")
 		}
 
-		b := make([]uint16, 200)
-		_, err := api.GetWindowText(h, &b[0], int32(len(b)))
+		bufTitle := make([]uint16, 200)
+		_, err := api.GetWindowText(h, &bufTitle[0], int32(len(bufTitle)))
+		if err != nil {
+			return 1 // ignore the error, continue enumeration
+		}
+
+		bufClass := make([]uint16, 200)
+		_, err = api.GetWindowClassName(h, &bufClass[0], len(bufClass))
 		if err != nil {
 			return 1 // ignore the error, continue enumeration
 		}
 
 		data := Wnd{
-			Title:   syscall.UTF16ToString(b),
+			Title:   syscall.UTF16ToString(bufTitle),
 			Handle:  h,
 			Style:   style,
 			Flags:   wp.Flags,
@@ -91,6 +98,7 @@ func EnumAllWindows() ([]Wnd, error) {
 				Right:  wp.RcNormalPosition.Right,
 				Bottom: wp.RcNormalPosition.Bottom,
 			},
+			ClassName: syscall.UTF16ToString(bufClass),
 		}
 		list = append(list, data)
 		return 1 // continue enumeration
@@ -115,22 +123,38 @@ func IsScreenSaverRunning() bool {
 }
 
 func (w *Wnd) String() string {
-	return fmt.Sprintf("%x, %s, %d:%d-%d:%d, %s",
+	return fmt.Sprintf("%x, %s, %d:%d-%d:%d, %s, %s",
 		w.Handle, w.ShowText(),
 		w.NormalPosition.Left, w.NormalPosition.Top,
 		w.NormalPosition.Right, w.NormalPosition.Bottom,
+		w.ClassName,
 		w.Title)
 }
 
 // ShowText https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowplacement
 func (w *Wnd) ShowText() string {
 	switch w.ShowCmd {
-	case 1:
+	case syscall.SW_HIDE:
+		return "hide"
+	case syscall.SW_SHOW:
+	case syscall.SW_NORMAL: // case syscall.SW_SHOWNORMAL:
 		return "normal"
-	case 2:
+	case syscall.SW_MINIMIZE:
+	case syscall.SW_SHOWMINIMIZED:
 		return "min"
-	case 3:
+	case syscall.SW_MAXIMIZE: // case syscall.SW_SHOWMAXIMIZED:
 		return "max"
+	case syscall.SW_SHOWNOACTIVATE:
+	case syscall.SW_SHOWNA:
+		return "norm-no-active"
+	case syscall.SW_SHOWMINNOACTIVE:
+		return "min-no-active"
+	case syscall.SW_RESTORE:
+		return "restore"
+	case syscall.SW_SHOWDEFAULT:
+		return "default"
+	case syscall.SW_FORCEMINIMIZE:
+		return "min-force"
 	}
 	return fmt.Sprintf("%d: unknown", w.ShowCmd)
 }
@@ -143,7 +167,8 @@ func (w *Wnd) Save() string {
 		w.MinPosition.X, w.MinPosition.Y,
 		w.MaxPosition.X, w.MaxPosition.Y,
 		w.NormalPosition.Left, w.NormalPosition.Top,
-		w.NormalPosition.Right, w.NormalPosition.Bottom)
+		w.NormalPosition.Right, w.NormalPosition.Bottom,
+		" "+w.ClassName)
 	return state
 }
 
@@ -156,7 +181,8 @@ func (w *Wnd) Load(state string) bool {
 		&w.MinPosition.X, &w.MinPosition.Y,
 		&w.MaxPosition.X, &w.MaxPosition.Y,
 		&w.NormalPosition.Left, &w.NormalPosition.Top,
-		&w.NormalPosition.Right, &w.NormalPosition.Bottom)
+		&w.NormalPosition.Right, &w.NormalPosition.Bottom,
+		&w.ClassName)
 	return err == nil
 }
 
