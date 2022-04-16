@@ -26,11 +26,15 @@ func Restore() {
 		sw, ok := saved[wd.Handle]
 		if !ok {
 			// no such window in stored
+			log.Printf("Skip window:\n"+
+				"  %s\n",
+				wd.String(),
+			)
 			continue
 		}
 
-		log.Printf("Restoring window:\n" +
-			"  > %s\n" +
+		log.Printf("Restoring window:\n"+
+			"  > %s\n"+
 			"  < %s\n",
 			sw.String(),
 			wd.String(),
@@ -40,5 +44,3 @@ func Restore() {
 	}
 
 }
-
-
