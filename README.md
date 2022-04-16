@@ -19,7 +19,7 @@ my life more easy.
 ### Details
 
 1. Logging. `winpos` is program without UI, it works hidden 
-and don't show nothing to screen / console. Only way to see what happens
+and doesn't show nothing to screen / console. Only way to see what happens
 is log file. Log file created in running directory. So best to launch 
 winpos from temporary dir, where log can be saved.
 

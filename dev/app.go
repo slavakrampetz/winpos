@@ -34,7 +34,7 @@ func main() {
 		cmd.Help()
 	case "help", "h", "--help", "-h":
 		cmd.Help()
-	case "list", "l", "--list", "-l":
+	case "list", "l", "ls", "--list", "-l":
 		cmd.List()
 	case "save", "s", "--save", "-s":
 		cmd.Save()

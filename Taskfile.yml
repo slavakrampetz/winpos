@@ -1,10 +1,10 @@
 # https://taskfile.dev
 
-version: '2'
+version: '3'
 
 ## Common settings
 silent: true
-expansions: 2
+#expansions: 2
 
 vars:
   EXENAME: winpos{{exeExt}}

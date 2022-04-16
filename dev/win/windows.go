@@ -1,3 +1,4 @@
+//go:build windows && amd64
 // +build windows,amd64
 
 package win
@@ -39,13 +40,13 @@ import (
 */
 
 type Wnd struct {
-	Title string
-	Handle syscall.Handle
-	Style  int32
-	Flags  uint32
-	ShowCmd uint32
-	MinPosition api.POINT
-	MaxPosition api.POINT
+	Title          string
+	Handle         syscall.Handle
+	Style          int32
+	Flags          uint32
+	ShowCmd        uint32
+	MinPosition    api.POINT
+	MaxPosition    api.POINT
 	NormalPosition api.RECT
 }
 
@@ -73,21 +74,21 @@ func EnumAllWindows() ([]Wnd, error) {
 		}
 
 		data := Wnd{
-			Title:          syscall.UTF16ToString(b),
-			Handle:         h,
-			Style:          style,
-			Flags:          wp.Flags,
-			ShowCmd:        wp.ShowCmd,
-			MinPosition:    api.POINT {
+			Title:   syscall.UTF16ToString(b),
+			Handle:  h,
+			Style:   style,
+			Flags:   wp.Flags,
+			ShowCmd: wp.ShowCmd,
+			MinPosition: api.POINT{
 				X: wp.PtMinPosition.X,
 				Y: wp.PtMinPosition.Y},
-			MaxPosition:    api.POINT {
+			MaxPosition: api.POINT{
 				X: wp.PtMaxPosition.X,
 				Y: wp.PtMaxPosition.Y},
-			NormalPosition: api.RECT {
-				Left: wp.RcNormalPosition.Left,
-				Top: wp.RcNormalPosition.Top,
-				Right: wp.RcNormalPosition.Right,
+			NormalPosition: api.RECT{
+				Left:   wp.RcNormalPosition.Left,
+				Top:    wp.RcNormalPosition.Top,
+				Right:  wp.RcNormalPosition.Right,
 				Bottom: wp.RcNormalPosition.Bottom,
 			},
 		}
@@ -121,7 +122,7 @@ func (w *Wnd) String() string {
 		w.Title)
 }
 
-// https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowplacement
+// ShowText https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowplacement
 func (w *Wnd) ShowText() string {
 	switch w.ShowCmd {
 	case 1:
@@ -197,5 +198,3 @@ func isGuiWindow(style int32) bool {
 	}
 	return true
 }
-
-
