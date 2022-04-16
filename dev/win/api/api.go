@@ -19,6 +19,7 @@ var (
 	procGetWindowLong        = user32.MustFindProc("GetWindowLongW")
 	procGetLastInputInfo     = user32.MustFindProc("GetLastInputInfo")
 	procSystemParametersInfo = user32.MustFindProc("SystemParametersInfoW")
+	getClassName             = user32.MustFindProc("GetClassNameW")
 
 	kernel32          = syscall.MustLoadDLL("kernel32.dll")
 	procGetTickCount  = kernel32.MustFindProc("GetTickCount")
@@ -100,6 +101,17 @@ func GetWindowText(hwnd syscall.Handle, str *uint16, maxCount int32) (len int32,
 		}
 	}
 	return
+}
+
+func GetWindowClassName(hwnd syscall.Handle, strBuf *uint16, maxCount int) (int, error) {
+	ret, _, e := syscall.SyscallN(getClassName.Addr(),
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(strBuf)),
+		uintptr(maxCount))
+	if ret == 0 {
+		return 0, e
+	}
+	return int(ret), nil
 }
 
 /*func findWindow(title string) (syscall.Handle, error) {
