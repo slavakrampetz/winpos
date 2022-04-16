@@ -35,7 +35,7 @@ tasks:
     cmds:
       - cmd: echo "Building {{.EXE}} …"
         silent: false
-      - cmd: go build -i -ldflags -H=windowsgui -o ./{{.EXE}} ./dev/app.go
+      - cmd: go build -ldflags -H=windowsgui -o ./{{.EXE}} ./dev/app.go
 
   run-list:
     deps: [build]
