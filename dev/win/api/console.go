@@ -13,7 +13,7 @@ const (
 )
 
 func attachConsole(dwParentProcess uint32) (ok bool, err error) {
-	r1, _, err := syscall.SyscallN(procAttachConsole.Addr(), 1, uintptr(dwParentProcess), 0, 0)
+	r1, _, err := syscall.SyscallN(procAttachConsole.Addr(), uintptr(dwParentProcess), 0, 0)
 	ok = r1 != 0 && err == nil
 	return
 }

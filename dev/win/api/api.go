@@ -64,7 +64,7 @@ func GetLastInputTime() (t time.Duration, err error) {
 }
 
 func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
-	r1, _, e1 := syscall.SyscallN(procEnumWindows.Addr(), 2, enumFunc, lparam, 0)
+	r1, _, e1 := syscall.SyscallN(procEnumWindows.Addr(), enumFunc, lparam, 0)
 	if r1 == 0 {
 		if e1 != 0 {
 			err = error(e1)
@@ -76,11 +76,9 @@ func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
 }
 
 func GetWindowLong(hWnd HWND, index int32) int32 {
-	ret, _, _ := syscall.SyscallN(procGetWindowLong.Addr(), 2,
-		uintptr(hWnd),
-		uintptr(index),
+	ret, _, _ := syscall.SyscallN(procGetWindowLong.Addr(),
+		uintptr(hWnd), uintptr(index),
 		0)
-
 	return int32(ret)
 }
 
@@ -89,7 +87,9 @@ func GetWindowStyle(hWnd syscall.Handle) int32 {
 }
 
 func GetWindowText(hwnd syscall.Handle, str *uint16, maxCount int32) (len int32, err error) {
-	r0, _, e1 := syscall.SyscallN(procGetWindowTextW.Addr(), 3, uintptr(hwnd), uintptr(unsafe.Pointer(str)),
+	r0, _, e1 := syscall.SyscallN(procGetWindowTextW.Addr(),
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(str)),
 		uintptr(maxCount))
 	len = int32(r0)
 	if len == 0 {
@@ -147,7 +147,7 @@ func GetWindowText(hwnd syscall.Handle, str *uint16, maxCount int32) (len int32,
 // }
 
 func GetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
-	ret, _, _ := syscall.SyscallN(procGetWindowPlacement.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(procGetWindowPlacement.Addr(),
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpwndpl)),
 		0)
@@ -155,7 +155,7 @@ func GetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
 }
 
 func SetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
-	ret, _, _ := syscall.SyscallN(procSetWindowPlacement.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(procSetWindowPlacement.Addr(),
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpwndpl)),
 		0)
