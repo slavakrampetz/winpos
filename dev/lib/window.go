@@ -18,6 +18,7 @@ func ShowWindowsList() {
 	}
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func ShowIdleStatus() {
 	idle, err := winapi.GetLastInputTime()
 	if err != nil {
@@ -28,5 +29,3 @@ func ShowIdleStatus() {
 	isSaver := win.IsScreenSaverRunning()
 	log.Printf("Screen saver: %v\n", isSaver)
 }
-
-

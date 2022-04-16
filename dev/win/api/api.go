@@ -1,3 +1,4 @@
+//go:build windows && amd64
 // +build windows,amd64
 
 package winapi
@@ -19,15 +20,16 @@ var (
 	procGetLastInputInfo     = user32.MustFindProc("GetLastInputInfo")
 	procSystemParametersInfo = user32.MustFindProc("SystemParametersInfoW")
 
-	kernel32                 = syscall.MustLoadDLL("kernel32.dll")
-	procGetTickCount         = kernel32.MustFindProc("GetTickCount")
-	procAttachConsole        = kernel32.MustFindProc("AttachConsole")
+	kernel32          = syscall.MustLoadDLL("kernel32.dll")
+	procGetTickCount  = kernel32.MustFindProc("GetTickCount")
+	procAttachConsole = kernel32.MustFindProc("AttachConsole")
 
 	// getWindowLongPtr   = user32.MustFindProc("GetWindowLongPtrW")
 	// getLastError       = kernel32.MustFindProc("GetLastError")
 )
 
-// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfoa?redirectedfrom=MSDN
+// SystemParametersInfo
+// from: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfoa
 func SystemParametersInfo(uiAction uint32, uiParam uint32, pvParam uintptr, fWinIni uint32) error {
 	r1, _, err := procSystemParametersInfo.Call(
 		uintptr(uiAction),
@@ -42,10 +44,10 @@ func SystemParametersInfo(uiAction uint32, uiParam uint32, pvParam uintptr, fWin
 	return nil
 }
 
-// Get last user input time in nanoseconds (1/10^9)
+// GetLastInputTime Get last user input time in nanoseconds (1/10^9)
 // from: https://stackoverflow.com/questions/22949444/using-golang-to-get-windows-idle-time-getlastinputinfo-or-similar
 func GetLastInputTime() (t time.Duration, err error) {
-	lii := LASTINPUTINFO {
+	lii := LASTINPUTINFO{
 		cbSize: 0,
 		dwTime: 0,
 	}
@@ -58,11 +60,11 @@ func GetLastInputTime() (t time.Duration, err error) {
 		}
 		return 0, fmt.Errorf("error getting last input info: unknown error")
 	}
-	return time.Duration(uint32(currentTickCount) - lii.dwTime) * time.Millisecond, nil
+	return time.Duration(uint32(currentTickCount)-lii.dwTime) * time.Millisecond, nil
 }
 
 func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
-	r1, _, e1 := syscall.Syscall(procEnumWindows.Addr(), 2, enumFunc, lparam, 0)
+	r1, _, e1 := syscall.SyscallN(procEnumWindows.Addr(), 2, enumFunc, lparam, 0)
 	if r1 == 0 {
 		if e1 != 0 {
 			err = error(e1)
@@ -74,7 +76,7 @@ func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
 }
 
 func GetWindowLong(hWnd HWND, index int32) int32 {
-	ret, _, _ := syscall.Syscall(procGetWindowLong.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(procGetWindowLong.Addr(), 2,
 		uintptr(hWnd),
 		uintptr(index),
 		0)
@@ -87,7 +89,8 @@ func GetWindowStyle(hWnd syscall.Handle) int32 {
 }
 
 func GetWindowText(hwnd syscall.Handle, str *uint16, maxCount int32) (len int32, err error) {
-	r0, _, e1 := syscall.Syscall(procGetWindowTextW.Addr(), 3, uintptr(hwnd), uintptr(unsafe.Pointer(str)), uintptr(maxCount))
+	r0, _, e1 := syscall.SyscallN(procGetWindowTextW.Addr(), 3, uintptr(hwnd), uintptr(unsafe.Pointer(str)),
+		uintptr(maxCount))
 	len = int32(r0)
 	if len == 0 {
 		if e1 != 0 {
@@ -144,7 +147,7 @@ func GetWindowText(hwnd syscall.Handle, str *uint16, maxCount int32) (len int32,
 // }
 
 func GetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
-	ret, _, _ := syscall.Syscall(procGetWindowPlacement.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(procGetWindowPlacement.Addr(), 2,
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpwndpl)),
 		0)
@@ -152,7 +155,7 @@ func GetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
 }
 
 func SetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
-	ret, _, _ := syscall.Syscall(procSetWindowPlacement.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(procSetWindowPlacement.Addr(), 2,
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpwndpl)),
 		0)

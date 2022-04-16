@@ -1,3 +1,4 @@
+//go:build windows && amd64
 // +build windows,amd64
 
 package win
@@ -20,11 +21,11 @@ var (
 	procGetCurrentProcess         = modKernel32.NewProc("GetCurrentProcess")
 	procQueryFullProcessImageName = modKernel32.NewProc("QueryFullProcessImageNameW")
 
-	modAdvapi32                   = syscall.NewLazyDLL("advapi32.dll")
-	procOpenProcessToken          = modAdvapi32.NewProc("OpenProcessToken")
-	procLookupPrivilegeValue      = modAdvapi32.NewProc("LookupPrivilegeValueW")
-	procAdjustTokenPrivileges     = modAdvapi32.NewProc("AdjustTokenPrivileges")
-	procGetTokenInformation       = modAdvapi32.NewProc("GetTokenInformation")
+	modAdvapi32               = syscall.NewLazyDLL("advapi32.dll")
+	procOpenProcessToken      = modAdvapi32.NewProc("OpenProcessToken")
+	procLookupPrivilegeValue  = modAdvapi32.NewProc("LookupPrivilegeValueW")
+	procAdjustTokenPrivileges = modAdvapi32.NewProc("AdjustTokenPrivileges")
+	procGetTokenInformation   = modAdvapi32.NewProc("GetTokenInformation")
 
 	modSecur32                    = syscall.NewLazyDLL("secur32.dll")
 	sessLsaFreeReturnBuffer       = modSecur32.NewProc("LsaFreeReturnBuffer")
@@ -34,15 +35,15 @@ var (
 
 //goland:noinspection GoSnakeCaseUsage
 const (
-	MAX_PATH                      = 260
-	MAX_FULL_PATH                 = 4096
-	PROC_SE_DEBUG_NAME            = "SeDebugPrivilege"
+	MAX_PATH           = 260
+	MAX_FULL_PATH      = 4096
+	PROC_SE_DEBUG_NAME = "SeDebugPrivilege"
 
-	PROCESS_QUERY_INFORMATION     = 0x0400
-	PROC_TOKEN_QUERY              = 0x0008
-	PROC_TOKEN_ADJUST_PRIVILEGES  = 0x0020
+	PROCESS_QUERY_INFORMATION    = 0x0400
+	PROC_TOKEN_QUERY             = 0x0008
+	PROC_TOKEN_ADJUST_PRIVILEGES = 0x0020
 
-	PROC_SE_PRIVILEGE_ENABLED     = 0x00000002
+	PROC_SE_PRIVILEGE_ENABLED = 0x00000002
 )
 
 // PROCESSENTRY32 is the Windows API structure that contains a process's information.
@@ -121,7 +122,7 @@ type TOKEN_STATISTICS struct {
 	ModifiedId         LUID
 }
 
-
+//goland:noinspection GoUnusedExportedFunction
 func ProcessList() ([]Process, error) {
 	err := procAssignCorrectPrivs(PROC_SE_DEBUG_NAME)
 	if err != nil {
@@ -169,7 +170,6 @@ func ProcessList() ([]Process, error) {
 
 	return results, nil
 }
-
 
 func procAssignCorrectPrivs(name string) error {
 	handle, _, _ := procGetCurrentProcess.Call()
