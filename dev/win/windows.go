@@ -190,7 +190,6 @@ func (w *Wnd) RestorePosition(saved Wnd) error {
 
 	var wp api.WINDOWPLACEMENT
 	wp.Length = uint32(unsafe.Sizeof(wp))
-	wp.Flags = saved.Flags
 	wp.ShowCmd = saved.ShowCmd
 	wp.PtMinPosition.X = saved.MinPosition.X
 	wp.PtMinPosition.Y = saved.MinPosition.Y
@@ -200,6 +199,35 @@ func (w *Wnd) RestorePosition(saved Wnd) error {
 	wp.RcNormalPosition.Top = saved.NormalPosition.Top
 	wp.RcNormalPosition.Right = saved.NormalPosition.Right
 	wp.RcNormalPosition.Bottom = saved.NormalPosition.Bottom
+
+	// Manually set flags
+	// from: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowplacement
+	// The flags member of WINDOWPLACEMENT retrieved by GetWindowPlacement is always zero.
+	wp.Flags = 0
+	switch saved.ShowCmd {
+
+	case syscall.SW_SHOW:
+	case syscall.SW_NORMAL: // case syscall.SW_SHOWNORMAL:
+	case syscall.SW_SHOWDEFAULT:
+	case syscall.SW_RESTORE:
+		wp.ShowCmd = syscall.SW_SHOW
+
+	case syscall.SW_SHOWNOACTIVATE:
+	case syscall.SW_SHOWNA:
+		wp.ShowCmd = syscall.SW_SHOWNA
+
+	case syscall.SW_HIDE:
+	case syscall.SW_MINIMIZE:
+	case syscall.SW_SHOWMINIMIZED:
+	case syscall.SW_FORCEMINIMIZE:
+	case syscall.SW_SHOWMINNOACTIVE:
+		wp.Flags = 0x0001 // WPF_SETMINPOSITION
+		wp.ShowCmd = syscall.SW_MINIMIZE
+
+	case syscall.SW_MAXIMIZE: // case syscall.SW_SHOWMAXIMIZED:
+		wp.Flags = 0x0002 // WPF_RESTORETOMAXIMIZED
+		wp.ShowCmd = syscall.SW_MAXIMIZE
+	}
 
 	if !api.SetWindowPlacement(api.HWND(w.Handle), &wp) {
 		return fmt.Errorf("cannot set window position, %x", w.Handle)
