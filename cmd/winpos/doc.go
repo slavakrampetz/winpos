@@ -1,8 +1,8 @@
 package main
 
 /**
-	From: https://github.com/LichP/windowstate
- */
+From: https://github.com/LichP/windowstate
+*/
 
 // require 'json'
 // require 'windows/window'

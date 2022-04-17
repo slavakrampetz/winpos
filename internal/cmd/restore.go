@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"winpos/dev/lib"
-	"winpos/dev/win"
+	"winpos/internal/lib"
+	"winpos/pkg/win"
 )
 
 func Restore() {

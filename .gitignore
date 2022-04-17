@@ -20,6 +20,8 @@
 !/.idea/dictionaries/*.xml
 !/.idea/go.xml
 
+## Task checksums
+/.task/
 
 # Dependency directories (remove the comment below to include it)
 vendor/

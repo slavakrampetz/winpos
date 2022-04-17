@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"winpos/dev/cmd"
+	"winpos/internal/cmd"
 )
 
 func main() {

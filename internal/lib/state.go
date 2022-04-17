@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"winpos/dev/win"
+	"winpos/pkg/win"
 )
 
 type WndMap map[syscall.Handle]win.Wnd
@@ -44,7 +44,7 @@ func SaveWindows(data []win.Wnd) error {
 	}
 
 	// Open file
-	fp, err := os.OpenFile(statePath, os.O_CREATE | os.O_TRUNC | os.O_WRONLY, 644)
+	fp, err := os.OpenFile(statePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 644)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,6 @@ func SaveWindows(data []win.Wnd) error {
 	return nil
 }
 
-
 func LoadWindows() (WndMap, error) {
 
 	wMap := make(WndMap)
@@ -79,7 +78,7 @@ func LoadWindows() (WndMap, error) {
 	scanner := bufio.NewScanner(fp)
 	for scanner.Scan() {
 		state := scanner.Text()
-		wp := win.Wnd {}
+		wp := win.Wnd{}
 		if !wp.Load(state) {
 			return nil, fmt.Errorf("error reading window data")
 		}

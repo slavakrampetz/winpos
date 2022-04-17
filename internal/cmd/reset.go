@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"winpos/dev/lib"
+	"winpos/internal/lib"
 )
 
 func Reset() {
 	lib.Cleanup()
 }
-
-

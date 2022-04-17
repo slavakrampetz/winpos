@@ -3,8 +3,8 @@ package lib
 import (
 	"log"
 
-	"winpos/dev/win"
-	"winpos/dev/win/api"
+	"winpos/pkg/win"
+	api "winpos/pkg/win/api"
 )
 
 func ShowWindowsList() {
@@ -20,7 +20,7 @@ func ShowWindowsList() {
 
 //goland:noinspection GoUnusedExportedFunction
 func ShowIdleStatus() {
-	idle, err := winapi.GetLastInputTime()
+	idle, err := api.GetLastInputTime()
 	if err != nil {
 		log.Printf("Error getting idle time: %v\n", err)
 	} else {

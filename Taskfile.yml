@@ -19,6 +19,13 @@ vars:
 
 tasks:
 
+  clean:
+    desc: Cleanup build artefacts
+    dir: ./bin
+    cmds:
+      - rm -f winpos winpos-cli winpos.exe winpos-cli.exe
+    silent: false
+
   build:
     desc: Build winpos.exe
     cmds:
@@ -29,13 +36,14 @@ tasks:
       - go.mod
     generates:
       - ./{{.EXE}}
+    method: checksum
 
   build-do:
     desc: Build winpos.exe
     cmds:
       - cmd: echo "Building {{.EXE}} …"
         silent: false
-      - cmd: go build -ldflags -H=windowsgui -o ./{{.EXE}} ./dev/app.go
+      - cmd: go build -ldflags -H=windowsgui -o ./{{.EXE}} ./cmd/winpos/main.go
 
   run-list:
     deps: [build]

@@ -1,10 +1,11 @@
+//go:build windows && amd64
 // +build windows,amd64
 
 package winapi
 
 type (
-	HANDLE        uintptr
-	HWND          HANDLE
+	HANDLE uintptr
+	HWND   HANDLE
 )
 
 type POINT struct {

@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	api "winpos/dev/win/api"
+	api "winpos/pkg/win/api"
 )
 
 /*func findWindow(title string) (syscall.Handle, error) {

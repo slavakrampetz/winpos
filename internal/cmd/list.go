@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"winpos/dev/lib"
+	"winpos/internal/lib"
 )
 
 func List() {
 	lib.ShowWindowsList()
 }
-

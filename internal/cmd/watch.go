@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"winpos/dev/win"
-	winapi "winpos/dev/win/api"
+	"winpos/pkg/win"
+	winapi "winpos/pkg/win/api"
 )
 
 //goland:noinspection GoSnakeCaseUsage
